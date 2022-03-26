@@ -39,10 +39,3 @@ while inputs:
             outputs.remove(s)
         else:
             s.send(next_msg)
-
-    for s in exceptional:
-        inputs.remove(s)
-        if s in outputs:
-            outputs.remove(s)
-        s.close()
-        del message_queues[s]
