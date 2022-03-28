@@ -71,6 +71,12 @@ def multi_threaded_client(connection, add):
                     continue
                 users[x][2].sendall(str.encode(message))
 
+        elif arr[1] == OPTION.BROADCAST_MESSAGE.value:
+            message = users[int(arr[0])][1] + ' broadcasts: ' + '\nMessage content: ' + arr[2];
+            for x in users:
+                if x[0] == int(arr[0]):
+                    continue
+                x[2].sendall(str.encode(message))
 
         elif arr[1] == OPTION.CLOSE_CONNECTION.value:
             print('client is asking to close the connection')
