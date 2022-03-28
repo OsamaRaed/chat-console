@@ -58,7 +58,7 @@ def multi_threaded_client(connection, add):
             # the dictionary and send the message to it
             # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
             client = online_clients[arr[2]]
-            client.sendall(str.encode(arr[3]))
+            client.sendall(str.encode('msg' + '|' + arr[3]))
 
         elif arr[1] == OPTION.CLOSE_CONNECTION.value:
             print('client is asking to close the connection')

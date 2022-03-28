@@ -4,7 +4,6 @@ from _thread import *
 import sys
 
 ClientMultiSocket = socket.socket()
-# ClientMultiSocket.setblocking(0)
 a_lock = allocate_lock()
 
 host = '127.0.0.1'
@@ -20,6 +19,20 @@ res = ClientMultiSocket.recv(1024)
 print(res.decode(UTF8))
 ClientMultiSocket.send(str.encode(id))
 
+def thread_listener(connection):
+    while True:
+        r_msg = connection.recv(1024)
+        if not r_msg:
+            continue
+        r_msg = r_msg.decode('utf-8').split('|')
+        if r_msg[0] == 'msg':
+            print(DASHES)
+            print('notification message: ', r_msg[1])
+            print(DASHES)
+
+
+args = [ClientMultiSocket]
+start_new_thread(thread_listener, tuple(args))
 while True:
     print(
         'list of functionalities\n',
@@ -57,7 +70,7 @@ while True:
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.SHOW_MESSAGES.value))
         data = ClientMultiSocket.recv(1024)
         print(DASHES)
-        print(data.decode(UTF8))
+        print(data.decode(UTF8).split('|')[1])
         print(DASHES)
         print()
     # option 7 will send request to close the connection
