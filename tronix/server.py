@@ -49,7 +49,7 @@ def multi_threaded_client(connection, add):
                 if bytes_read == '':
                     break
                 reciverCon.sendall(bytes_read)
-            reciverCon.sendall(''.encode(UTF8))
+            reciverCon.sendall('stop'.encode(UTF8))
 
         elif arr[1] == OPTION.LIST_ONLINE_USERS.value:
             print('sending online users to client')

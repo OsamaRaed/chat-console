@@ -10,7 +10,7 @@ a_lock = allocate_lock()
 
 host = '127.0.0.1'
 port = 2005
-name = 'DrAyman'
+name = 'Osama'
 UTF8 = 'utf-8'
 SEPARATOR = "<SEPARATOR>"
 DASHES = '------------'
@@ -39,7 +39,7 @@ def thread_listener(connection):
                     # read 1024 bytes from the socket (receive)
                     bytes_read = connection.recv(4086)
                     bytes_read = bytes_read.decode(UTF8)
-                    if bytes_read == '':
+                    if bytes_read == 'stop':
                         break
 
                     f.write(bytes_read)
@@ -143,7 +143,7 @@ while True:
 
                 ClientMultiSocket.sendall(bytes_read.encode(UTF8))
             f.close()
-
+        ClientMultiSocket.sendall('stop'.encode(UTF8))
         print('--File Send Successfully--')
 
 
@@ -153,5 +153,3 @@ while True:
         sys.exit('closing the connection')
 
 ClientMultiSocket.close()
-
-
