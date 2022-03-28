@@ -52,6 +52,16 @@ def multi_threaded_client(connection, add):
             message = 'Message from: ' + users[int(arr[0])][1] +'\nMessage content: '+ arr[3];
             reciverCon.sendall(str.encode(message))
 
+        elif arr[1] == OPTION.LIST_CURRENT_GROUPS.value:
+            id = 0
+            temp = ''
+            for x in groups:
+                temp += 'Group ' + str(id) + ': '
+                for y in x:
+                    temp += users[y][1] + '   '
+
+            connection.sendall(str.encode(temp))
+
         elif arr[1] == OPTION.CREATE_GROUP.value:
             print('reee')
             temp = [];
@@ -81,12 +91,9 @@ def multi_threaded_client(connection, add):
         elif arr[1] == OPTION.CLOSE_CONNECTION.value:
             print('client is asking to close the connection')
             break
-        elif arr[1] == OPTION.SHOW_MESSAGES.value:
-            Client.send(str.encode('  '))
 
-        # connection.sendall(str.encode(response))
-    del online_clients[client_id]
-    connection.close()
+
+        connection.close()
 
 
 while True:

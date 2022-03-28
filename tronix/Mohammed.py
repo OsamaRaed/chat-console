@@ -2,6 +2,7 @@ import socket
 from client_options import OPTION
 from _thread import *
 import sys
+import time
 
 ClientMultiSocket = socket.socket()
 a_lock = allocate_lock()
@@ -27,7 +28,8 @@ def thread_listener(connection):
         r_msg = r_msg.decode('utf-8')
 
         print(DASHES)
-        print('notification message: \n',r_msg)
+        print('notification message: ')
+        print(r_msg)
         print(DASHES)
 
 
@@ -38,15 +40,20 @@ start_new_thread(thread_listener, tuple(args))
 #     return ClientMultiSocket.recv(1024)
 
 while True:
+    time.sleep(0.5)
     print(
-        'list of functionalities\n',
-        '1) list of online users\n',
-        '2) message user\n',
-        '3) create group\n',
-        '6) show messages\n',
-        '7) close connection'
+        'List of functionalities\n',
+        '1) List online users\n',
+        '2) List all groups\n',
+        '3) Send message to user\n',
+        '4) Create group\n',
+        '5) Join group\n',
+        '6) send message to group\n',
+        '7) Broadcast message\n',
+        '8) close connection'
+
     )
-    Input = input('ur choice: ')
+    Input = input('Enter your choice: ')
 
     # option 1 is about listening online users
     if Input == OPTION.LIST_ONLINE_USERS.value:
@@ -54,11 +61,11 @@ while True:
         # structure id | cmd
         ClientMultiSocket.send(str.encode(str(id) + '|' + str(OPTION.LIST_ONLINE_USERS.value)))
 
-    # option 2 is about sending to other user
+    elif Input == OPTION.LIST_CURRENT_GROUPS.value:
+        ClientMultiSocket.send(str.encode(str(id) + '|' + str(OPTION.LIST_CURRENT_GROUPS.value)))
+
+
     elif Input == OPTION.SEND_MESSAGE_TO_USER.value:
-        ClientMultiSocket.send(str.encode(str(id) + '|' + str(OPTION.LIST_ONLINE_USERS.value)))
-
-
         reciver_id = input('choose user id: ')
         while (True):
             msg = input('Write your message: ')
@@ -88,11 +95,21 @@ while True:
             ClientMultiSocket.send(str.encode(temp))
             print('sent')
         print(DASHES)
+    elif Input == OPTION.BROADCAST_MESSAGE.value:
+        msg = input('Write your message: ')
+        # structure is [0] client id | [1] option asked | [2] message
+        temp = str(id) + '|' + OPTION.BROADCAST_MESSAGE.value + '|' + msg
+        ClientMultiSocket.send(str.encode(temp))
+        print('sent')
+        print(DASHES)
+
+
 
     # option 7 will send request to close the connection
     elif Input == OPTION.CLOSE_CONNECTION.value:
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.CLOSE_CONNECTION.value))
         sys.exit('closing the connection')
+
 ClientMultiSocket.close()
 
 
