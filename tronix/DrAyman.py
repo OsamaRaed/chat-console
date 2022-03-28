@@ -69,7 +69,8 @@ while True:
         '5) Join group\n',
         '6) send message to group\n',
         '7) Broadcast message\n',
-        '8) close connection'
+        '8) Send File to user\n',
+        '9) close connection'
 
     )
     Input = input('Enter your choice: ')

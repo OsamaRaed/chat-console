@@ -55,8 +55,6 @@ def thread_listener(connection):
 args = [ClientMultiSocket]
 start_new_thread(thread_listener, tuple(args))
 
-# def recive():
-#     return ClientMultiSocket.recv(1024)
 
 while True:
     time.sleep(0.5)
@@ -69,7 +67,8 @@ while True:
         '5) Join group\n',
         '6) send message to group\n',
         '7) Broadcast message\n',
-        '8) close connection'
+        '8) Send File to user\n',
+        '9) close connection'
 
     )
     Input = input('Enter your choice: ')
