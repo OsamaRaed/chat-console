@@ -42,7 +42,7 @@ def multi_threaded_client(connection, add):
             received = connection.recv(1024).decode()
             print(received)
             filename, filesize = received.split(SEPARATOR)
-            filename = os.path.basename(filename)
+            filename = os.path.basename('1'+filename)
             filesize = int(filesize)
 
             progress = tqdm.tqdm(range(filesize), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
@@ -58,7 +58,9 @@ def multi_threaded_client(connection, add):
                     f.write(bytes_read)
                     # update the progress bar
                     progress.update(len(bytes_read))
-
+            connection.close()
+            # close the server socket
+            ServerSideSocket.close()
 
         # split the request from the client
         # structure is [0] client id | [1] option asked
