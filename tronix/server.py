@@ -1,4 +1,5 @@
 import socket
+from client_options import OPTION
 from _thread import *
 
 ServerSideSocket = socket.socket()
@@ -13,40 +14,63 @@ online_clients = dict()
 
 
 def multi_threaded_client(connection, add):
+    # send to client Server is working
     connection.send(str.encode('Server is working:'))
+    # wait for client to send his id
+    client_id = Client.recv(1024).decode('utf-8')
+    online_clients[client_id] = Client
+    # print('client id:', client_id)
+    # print here the online clients on the server each new connection
+    array_of_keys_in_server = []
+    online = ''
+    for k in online_clients.keys():
+        array_of_keys_in_server.append(k)
+    for i in range(len(array_of_keys_in_server)):
+        online = online + '\nonline id: ' + str(array_of_keys_in_server[i])
+    print(online)
+
+    # start chatting
     while True:
         data = connection.recv(2048)
+        if not data:
+            continue
         response = ''
         arr = data.decode('utf-8').split('|')
-        # print(arr)
-        # print(online_clients)
-        if arr[1] == '1':
-            online_clients[arr[0]] = connection
+        # split the request from the client
+        # structure is [0] client id | [1] option asked
+        print(arr)
+        if arr[1] == OPTION.LIST_ONLINE_USERS.value:
+            print('sending online users to client')
             array_of_keys = []
             for k in online_clients.keys():
                 array_of_keys.append(k)
-            # print(online_clients)
             for i in range(len(array_of_keys)):
                 if array_of_keys[i] != arr[0]:
-                    response = response + '\nclient ' + str(i) + ' ' + str(array_of_keys[i])
-                    # print('A')
-        elif arr[1] == '2':
+                    response = response + '\nclient id: ' + str(array_of_keys[i])
+                else:
+                    response = response + '\nYOU!! ur id: ' + str(array_of_keys[i])
+            connection.sendall(str.encode(response))
+
+        elif arr[1] == OPTION.SEND_MESSAGE_TO_USER.value:
+            # client has chosen to send message to other client, so we have to get the other client connection from
+            # the dictionary and send the message to it
+            # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
             client = online_clients[arr[2]]
-            client.sendall(str.encode("test"))
-        response = response + '\nServer message: ' + data.decode('utf-8')
-        if data.decode('utf-8') == '2':
+            client.sendall(str.encode(arr[3]))
+
+        elif arr[1] == OPTION.CLOSE_CONNECTION.value:
+            print('client is asking to close the connection')
             break
-        if not data:
-            break
-        connection.sendall(str.encode(response))
-    x = online_clients.pop(str(add[1]))
-    print(x)
+
+        # connection.sendall(str.encode(response))
+    del online_clients[client_id]
     connection.close()
 
 
 while True:
     Client, address = ServerSideSocket.accept()
     print('Connected to: ' + address[0] + ':' + str(address[1]))
+    # start new thread
     start_new_thread(multi_threaded_client, (Client, address))
     ThreadCount += 1
     print('Thread Number: ' + str(ThreadCount))
