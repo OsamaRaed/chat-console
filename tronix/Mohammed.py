@@ -84,6 +84,12 @@ while True:
         ClientMultiSocket.send(str.encode(temp))
         print('--Group created--')
 
+    elif Input == OPTION.JOIN_GROUP.value:
+        group_id = input('Enter group ID you want to join: ')
+        # structure is [0] client id | [1] option asked | [2] group id
+        temp = str(id) + '|' + OPTION.JOIN_GROUP.value + '|' + group_id
+        ClientMultiSocket.send(str.encode(temp))
+        print('--You joined to group '+ group_id +'--')
     elif Input == OPTION.SEND_MESSAGE_TO_GROUP.value:
         group_id = input('Choose group id: ')
         while (True):
