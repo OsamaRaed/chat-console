@@ -38,7 +38,8 @@ while True:
         'list of functionalities\n',
         '1) list of online users\n',
         '2) message user\n',
-        '6) close connection'
+        '6) show messages\n',
+        '7) close connection'
     )
     Input = input('ur choice: ')
 
@@ -76,7 +77,15 @@ while True:
     #     a_lock.acquire()
     #     ClientMultiSocket.send(str.encode(id + '|' + '2' + '|' + client_id + '|' + msg))
     #     a_lock.release()
-    # option 6 will send request to close the connection
+    # option 6 will show messages
+    elif Input == OPTION.SHOW_MESSAGES.value:
+        ClientMultiSocket.send(str.encode(id + '|' + OPTION.SHOW_MESSAGES.value))
+        data = ClientMultiSocket.recv(1024)
+        print(DASHES)
+        print(data.decode(UTF8))
+        print(DASHES)
+        print()
+    # option 7 will send request to close the connection
     elif Input == OPTION.CLOSE_CONNECTION.value:
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.CLOSE_CONNECTION.value))
         sys.exit('closing the connection')

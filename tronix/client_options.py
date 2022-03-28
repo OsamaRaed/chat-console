@@ -7,4 +7,6 @@ class OPTION(Enum):
     SEND_MESSAGE_TO_GROUP = '3'
     SELECT_USER_ID = '4'
     SELECT_GROUP_ID = '5'
-    CLOSE_CONNECTION = '6'
+    SHOW_MESSAGES = '6'
+    CLOSE_CONNECTION = '7'
+

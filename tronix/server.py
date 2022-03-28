@@ -48,7 +48,7 @@ def multi_threaded_client(connection, add):
                 if array_of_keys[i] != arr[0]:
                     response = response + '\nclient id: ' + str(array_of_keys[i])
                 else:
-                    response = response + '\nYOU!! ur id: ' + str(array_of_keys[i])
+                    response = response + '\nYOU!!'
             connection.sendall(str.encode(response))
 
         elif arr[1] == OPTION.SEND_MESSAGE_TO_USER.value:
@@ -61,6 +61,8 @@ def multi_threaded_client(connection, add):
         elif arr[1] == OPTION.CLOSE_CONNECTION.value:
             print('client is asking to close the connection')
             break
+        elif arr[1] == OPTION.SHOW_MESSAGES.value:
+            Client.send(str.encode('  '))
 
         # connection.sendall(str.encode(response))
     del online_clients[client_id]
