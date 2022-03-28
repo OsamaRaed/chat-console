@@ -3,6 +3,10 @@ from client_options import OPTION
 from _thread import *
 import sys
 import time
+import tqdm
+import os
+
+
 
 ClientMultiSocket = socket.socket()
 a_lock = allocate_lock()
@@ -11,6 +15,7 @@ host = '127.0.0.1'
 port = 2005
 name = 'Mohammed'
 UTF8 = 'utf-8'
+SEPARATOR = "<SEPARATOR>"
 DASHES = '------------'
 
 print('Waiting for connection response')
@@ -26,9 +31,8 @@ def thread_listener(connection):
         if not r_msg:
             continue
         r_msg = r_msg.decode('utf-8')
-
         print(DASHES)
-        print('notification message: ')
+        print('Notification message: ')
         print(r_msg)
         print(DASHES)
 
@@ -108,6 +112,40 @@ while True:
         ClientMultiSocket.send(str.encode(temp))
         print('sent')
         print(DASHES)
+
+    elif Input == OPTION.SEND_FILE_TO_USER.value:
+        reciver_id = input('choose user id: ')
+        filename = input('Enter file name: ')
+        filesize = os.path.getsize(filename)
+        # file = open(filename, 'w')
+        ClientMultiSocket.send(str.encode(id + '|' + OPTION.SEND_FILE_TO_USER.value +'|'+ reciver_id))
+        ClientMultiSocket.send(f"{filename}{SEPARATOR}{filesize}".encode())
+        print(f"{filename}{SEPARATOR}{filesize}")
+        progress = tqdm.tqdm(range(filesize), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
+        with open(filename, "rb") as f:
+            while True:
+                # read the bytes from the file
+                bytes_read = f.read(1024)
+                if not bytes_read:
+                    # file transmitting is done
+                    break
+                # we use sendall to assure transimission in
+                # busy networks
+                ClientMultiSocket.sendall(bytes_read)
+                # update the progress bar
+                progress.update(len(bytes_read))
+        # close the socket
+        ClientMultiSocket.close()
+
+        # ##ClientMultiSocket.send(str.encode(id + '|' + OPTION.SEND_FILE_TO_USER.value +'|'+ reciver_id))
+        # file_data = file.read(1024).encode('utf-8')
+        # print(file_data)
+
+        # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
+        # temp = str(id) + '|' + OPTION.SEND_MESSAGE_TO_USER.value + '|' + reciver_id + '|' + msg
+        # ClientMultiSocket.send(str.encode(temp))
+        # print('sent')
+        # print(DASHES)
 
 
 

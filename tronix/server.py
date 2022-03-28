@@ -1,13 +1,16 @@
 import socket
 from client_options import OPTION
 from _thread import *
+import tqdm
+import os
+
 
 ServerSideSocket = socket.socket()
 host = '127.0.0.1'
 port = 2005
 ThreadCount = -1
 UTF8 = 'utf-8'
-
+SEPARATOR = "<SEPARATOR>"
 users = []
 groups = []
 
@@ -33,6 +36,30 @@ def multi_threaded_client(connection, add):
             continue
         response = ''
         arr = data.decode(UTF8).split('|')
+        if arr[1] == OPTION.SEND_FILE_TO_USER.value:
+            reciverCon = users[int(arr[2])][2]
+            message = 'File from: ' + users[int(arr[0])][1]
+            received = connection.recv(1024).decode()
+            print(received)
+            filename, filesize = received.split(SEPARATOR)
+            filename = os.path.basename(filename)
+            filesize = int(filesize)
+
+            progress = tqdm.tqdm(range(filesize), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
+            with open(filename, "wb") as f:
+                while True:
+                    # read 1024 bytes from the socket (receive)
+                    bytes_read = connection.recv(1024)
+                    if not bytes_read:
+                        # nothing is received
+                        # file transmitting is done
+                        break
+                    # write to the file the bytes we just received
+                    f.write(bytes_read)
+                    # update the progress bar
+                    progress.update(len(bytes_read))
+
+
         # split the request from the client
         # structure is [0] client id | [1] option asked
         print(data.decode(UTF8))
