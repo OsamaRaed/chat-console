@@ -15,12 +15,13 @@ ServerSideSocket.listen(5)
 online_clients = dict()
 
 
-def multi_threaded_client(connection, add):
+def multi_threaded_client(connection, new_thread_count):
     # send to client Server is working
     connection.send(str.encode('Server is working:'))
     # wait for client to send his id
-    client_id = Client.recv(1024).decode(UTF8)
-    online_clients[client_id] = Client
+    # client_id = connection.recv(1024).decode(UTF8)
+    connection.send(str.encode(str(new_thread_count)))
+    online_clients[new_thread_count] = connection
     # print('client id:', client_id)
     # print here the online clients on the server each new connection
     array_of_keys_in_server = []
@@ -47,27 +48,24 @@ def multi_threaded_client(connection, add):
             for k in online_clients.keys():
                 array_of_keys.append(k)
             for i in range(len(array_of_keys)):
-                if array_of_keys[i] != arr[0]:
+                if array_of_keys[i] == arr[0]:
                     response = response + '\nclient id: ' + str(array_of_keys[i])
                 else:
                     response = response + '\nYOU!!'
-            connection.sendall(str.encode(response))
+            connection.sendall(str.encode('online users!!\n' + response))
 
         elif arr[1] == OPTION.SEND_MESSAGE_TO_USER.value:
             # client has chosen to send message to other client, so we have to get the other client connection from
             # the dictionary and send the message to it
             # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
             client = online_clients[arr[2]]
-            client.sendall(str.encode('msg' + '|' + arr[3]))
+            client.sendall(str.encode('new message! from ' + arr[0] + '\nmessage: ' + arr[3]))
 
         elif arr[1] == OPTION.CLOSE_CONNECTION.value:
             print('client is asking to close the connection')
             break
-        elif arr[1] == OPTION.SHOW_MESSAGES.value:
-            Client.send(str.encode('  '))
-
         # connection.sendall(str.encode(response))
-    del online_clients[client_id]
+    del online_clients[new_thread_count]
     connection.close()
 
 
@@ -75,7 +73,8 @@ while True:
     Client, address = ServerSideSocket.accept()
     print('Connected to: ' + address[0] + ':' + str(address[1]))
     # start new thread
-    start_new_thread(multi_threaded_client, (Client, address))
     ThreadCount += 1
+
+    start_new_thread(multi_threaded_client, (Client, ThreadCount))
     print('Thread Number: ' + str(ThreadCount))
 ServerSideSocket.close()
