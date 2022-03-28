@@ -6,6 +6,8 @@ ServerSideSocket = socket.socket()
 host = '127.0.0.1'
 port = 2004
 ThreadCount = 0
+UTF8 = 'utf-8'
+
 ServerSideSocket.bind((host, port))
 print('Socket is listening..')
 ServerSideSocket.listen(5)
@@ -17,7 +19,7 @@ def multi_threaded_client(connection, add):
     # send to client Server is working
     connection.send(str.encode('Server is working:'))
     # wait for client to send his id
-    client_id = Client.recv(1024).decode('utf-8')
+    client_id = Client.recv(1024).decode(UTF8)
     online_clients[client_id] = Client
     # print('client id:', client_id)
     # print here the online clients on the server each new connection
@@ -35,7 +37,7 @@ def multi_threaded_client(connection, add):
         if not data:
             continue
         response = ''
-        arr = data.decode('utf-8').split('|')
+        arr = data.decode(UTF8).split('|')
         # split the request from the client
         # structure is [0] client id | [1] option asked
         print(arr)

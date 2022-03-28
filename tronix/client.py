@@ -20,19 +20,6 @@ res = ClientMultiSocket.recv(1024)
 print(res.decode(UTF8))
 ClientMultiSocket.send(str.encode(id))
 
-# def thread_listener(connection):
-#     while True:
-#         # print("test")
-#         a_lock.acquire()
-#         data = connection.recv()
-#         a_lock.release()
-#         data = data.decode('utf-8').split('|')
-#         if data[0] == 'msg':
-#             print('notification message from ', data[1], ': ', data[2])
-#
-#
-# args = [ClientMultiSocket]
-# start_new_thread(thread_listener, tuple(args))
 while True:
     print(
         'list of functionalities\n',
@@ -48,9 +35,7 @@ while True:
         print('receiving online users from the server')
         # structure id | cmd
         ClientMultiSocket.send(str.encode(id + '|' + str(OPTION.LIST_ONLINE_USERS.value)))
-        # a_lock.acquire()
         res = ClientMultiSocket.recv(1024)
-        # a_lock.release()
         print(DASHES)
         print(res.decode(UTF8))
         print(DASHES)
@@ -63,20 +48,10 @@ while True:
         print(DASHES)
         Input = input('choose user id: ')
         msg = input('write ur message: ')
-        #     a_lock.acquire()
         # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.SEND_MESSAGE_TO_USER.value + '|' + Input + '|' + msg))
         print('message sent!!')
         print(DASHES)
-        # res = ClientMultiSocket.recv(1024)
-    #     a_lock.release()
-    #
-    #     print(res.decode('utf-8'))
-    #     client_id = input('Enter user id')
-    #     msg = input('Enter the message')
-    #     a_lock.acquire()
-    #     ClientMultiSocket.send(str.encode(id + '|' + '2' + '|' + client_id + '|' + msg))
-    #     a_lock.release()
     # option 6 will show messages
     elif Input == OPTION.SHOW_MESSAGES.value:
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.SHOW_MESSAGES.value))
