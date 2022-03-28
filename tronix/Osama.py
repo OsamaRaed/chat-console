@@ -42,6 +42,7 @@ while True:
         'list of functionalities\n',
         '1) list of online users\n',
         '2) message user\n',
+        '3) create group\n',
         '6) show messages\n',
         '7) close connection'
     )
@@ -60,7 +61,7 @@ while True:
 
         reciver_id = input('choose user id: ')
         while (True):
-            msg = input('write ur message: ')
+            msg = input('Write your message: ')
             if(msg == 'end'):
                 break
             # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
@@ -68,14 +69,26 @@ while True:
             ClientMultiSocket.send(str.encode(temp))
             print('sent')
         print(DASHES)
-    # option 6 will show messages
-    elif Input == OPTION.SHOW_MESSAGES.value:
-        ClientMultiSocket.send(str.encode(str(id) + '|' + OPTION.SHOW_MESSAGES.value))
-        data = ClientMultiSocket.recv(1024)
+
+    elif Input == OPTION.CREATE_GROUP.value:
+        participants = input('Enter participants ID\'s separated by space: ')
+        # structure is [0] client id | [1] option asked | [2] id's of the participants client
+        temp = str(id) + '|' + OPTION.CREATE_GROUP.value + '|' + participants
+        ClientMultiSocket.send(str.encode(temp))
+        print('--Group created--')
+
+    elif Input == OPTION.SEND_MESSAGE_TO_GROUP.value:
+        group_id = input('Choose group id: ')
+        while (True):
+            msg = input('Write your message: ')
+            if(msg == 'end'):
+                break
+            # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
+            temp = str(id) + '|' + OPTION.SEND_MESSAGE_TO_GROUP.value + '|' + group_id + '|' + msg
+            ClientMultiSocket.send(str.encode(temp))
+            print('sent')
         print(DASHES)
-        print(data.decode(UTF8).split('|')[1])
-        print(DASHES)
-        print()
+
     # option 7 will send request to close the connection
     elif Input == OPTION.CLOSE_CONNECTION.value:
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.CLOSE_CONNECTION.value))

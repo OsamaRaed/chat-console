@@ -9,6 +9,7 @@ ThreadCount = -1
 UTF8 = 'utf-8'
 
 users = []
+groups = [] ##[0,1,2]
 
 ServerSideSocket.bind((host, port))
 print('Socket is listening..')
@@ -50,6 +51,26 @@ def multi_threaded_client(connection, add):
             reciverCon = users[int(arr[2])][2]
             message = 'Message from: ' + users[int(arr[0])][1] +'\nMessage content: '+ arr[3];
             reciverCon.sendall(str.encode(message))
+
+        elif arr[1] == OPTION.CREATE_GROUP.value:
+            print('reee')
+            temp = [];
+            temp.append(int(arr[0]))
+            for x in arr[2].split(" "):
+                temp.append(int(x) )
+            groups.append(set(temp))
+            print(groups)
+            for x in groups:
+                for y in x:
+                    print(y)
+        elif arr[1] == OPTION.SEND_MESSAGE_TO_GROUP.value:
+            reciver_group = int(arr[2])
+            message = 'Message from ' + users[int(arr[0])][1] + ' in group ' + str(reciver_group) + '\nMessage content: ' + arr[3];
+            for x in groups[reciver_group]:
+                if x == int(arr[0]):
+                    continue
+                users[x][2].sendall(str.encode(message))
+
 
         elif arr[1] == OPTION.CLOSE_CONNECTION.value:
             print('client is asking to close the connection')
