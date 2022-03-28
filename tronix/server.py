@@ -19,48 +19,39 @@ ServerSideSocket.listen(5)
 
 online_clients = dict()
 
-
 def multi_threaded_client(connection, add):
     # send to client Server is working
     connection.send(str.encode('Server is working:'))
     # wait for client to send his id
-    client_name = connection.recv(4096).decode(UTF8)
+    client_name = connection.recv(1024).decode(UTF8)
     users.append([ThreadCount,client_name,connection])
     connection.send(str.encode(str(ThreadCount))) #send id to client
 
     # start chatting
     while True:
-        data = connection.recv(4096)
+        data = connection.recv(1024)
         if not data:
             continue
         response = ''
         arr = data.decode(UTF8).split('|')
         if arr[1] == OPTION.SEND_FILE_TO_USER.value:
             reciverCon = users[int(arr[2])][2]
-            message = 'File from: ' + users[int(arr[0])][1]
-            received = connection.recv(4096).decode()
-            print(received)
-            filename, filesize = received.split(SEPARATOR)
-            filename = os.path.basename('new '+filename)
-            filesize = int(filesize)
 
-            with open(filename, "w") as f:
-                while True:
-                    # read 4096 bytes from the socket (receive)
-                    bytes_read = connection.recv(4086)
+            filename = connection.recv(1024).decode()
+            filename = os.path.basename(filename)
+            message = 'File from: ' + users[int(arr[0])][1] + '|' +filename
+            reciverCon.sendall(message.encode(UTF8))
 
 
-                    if not bytes_read:
-                        break
-                    bytes_read = bytes_read.decode(UTF8)
-                    print(bytes_read)
-                    f.write(bytes_read)
-                    f.close()
+            while True:
+                # read 1024 bytes from the socket (receive)
+                bytes_read = connection.recv(4086)
+                if bytes_read == '':
+                    break
+                reciverCon.sendall(bytes_read)
+            reciverCon.sendall(''.encode(UTF8))
 
-        # split the request from the client
-        # structure is [0] client id | [1] option asked
-        print(data.decode(UTF8))
-        if arr[1] == OPTION.LIST_ONLINE_USERS.value:
+        elif arr[1] == OPTION.LIST_ONLINE_USERS.value:
             print('sending online users to client')
             array_of_keys = []
             listOfUsers = ''
