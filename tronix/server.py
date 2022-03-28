@@ -1,7 +1,6 @@
 import socket
 from client_options import OPTION
 from _thread import *
-import tqdm
 import os
 
 
@@ -25,13 +24,13 @@ def multi_threaded_client(connection, add):
     # send to client Server is working
     connection.send(str.encode('Server is working:'))
     # wait for client to send his id
-    client_name = connection.recv(1024).decode(UTF8)
+    client_name = connection.recv(4096).decode(UTF8)
     users.append([ThreadCount,client_name,connection])
     connection.send(str.encode(str(ThreadCount))) #send id to client
 
     # start chatting
     while True:
-        data = connection.recv(2048)
+        data = connection.recv(4096)
         if not data:
             continue
         response = ''
@@ -39,28 +38,24 @@ def multi_threaded_client(connection, add):
         if arr[1] == OPTION.SEND_FILE_TO_USER.value:
             reciverCon = users[int(arr[2])][2]
             message = 'File from: ' + users[int(arr[0])][1]
-            received = connection.recv(1024).decode()
+            received = connection.recv(4096).decode()
             print(received)
             filename, filesize = received.split(SEPARATOR)
-            filename = os.path.basename('1'+filename)
+            filename = os.path.basename('new '+filename)
             filesize = int(filesize)
 
-            progress = tqdm.tqdm(range(filesize), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
-            with open(filename, "wb") as f:
+            with open(filename, "w") as f:
                 while True:
-                    # read 1024 bytes from the socket (receive)
-                    bytes_read = connection.recv(1024)
+                    # read 4096 bytes from the socket (receive)
+                    bytes_read = connection.recv(4086)
+
+
                     if not bytes_read:
-                        # nothing is received
-                        # file transmitting is done
                         break
-                    # write to the file the bytes we just received
+                    bytes_read = bytes_read.decode(UTF8)
+                    print(bytes_read)
                     f.write(bytes_read)
-                    # update the progress bar
-                    progress.update(len(bytes_read))
-            connection.close()
-            # close the server socket
-            ServerSideSocket.close()
+                    f.close()
 
         # split the request from the client
         # structure is [0] client id | [1] option asked
