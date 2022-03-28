@@ -19,20 +19,21 @@ res = ClientMultiSocket.recv(1024)
 print(res.decode(UTF8))
 ClientMultiSocket.send(str.encode(id))
 
-def thread_listener(connection):
-    while True:
-        r_msg = connection.recv(1024)
-        if not r_msg:
-            continue
-        r_msg = r_msg.decode('utf-8').split('|')
-        if r_msg[0] == 'msg':
-            print(DASHES)
-            print('notification message: ', r_msg[1])
-            print(DASHES)
 
-
-args = [ClientMultiSocket]
-start_new_thread(thread_listener, tuple(args))
+# def thread_listener(connection):
+#     while True:
+#         r_msg = connection.recv(1024)
+#         if not r_msg:
+#             continue
+#         r_msg = r_msg.decode('utf-8').split('|')
+#         if r_msg[0] == 'msg':
+#             print(DASHES)
+#             print('notification message: ', r_msg[1])
+#             print(DASHES)
+#
+#
+# args = [ClientMultiSocket]
+# start_new_thread(thread_listener, tuple(args))
 while True:
     print(
         'list of functionalities\n',
