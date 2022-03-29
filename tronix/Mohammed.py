@@ -3,16 +3,14 @@ from client_options import OPTION
 from _thread import *
 import sys
 import time
-import os
 
 ClientMultiSocket = socket.socket()
 a_lock = allocate_lock()
 
 host = '127.0.0.1'
 port = 2005
-name = 'Mo'
+name = 'Mohammed'
 UTF8 = 'utf-8'
-SEPARATOR = "<SEPARATOR>"
 DASHES = '------------'
 
 print('Waiting for connection response')
@@ -37,14 +35,13 @@ def thread_listener(connection):
             with open(filename, "w") as f:
                 while True:
                     # read 1024 bytes from the socket (receive)
-                    bytes_read = connection.recv(4086)
+                    bytes_read = connection.recv(1024)
                     bytes_read = bytes_read.decode(UTF8)
                     if bytes_read == 'stop':
                         break
 
                     f.write(bytes_read)
                 f.close()
-            print('--File Received Successfully--')
 
         print(DASHES)
         print('Notification message: ')
@@ -54,9 +51,6 @@ def thread_listener(connection):
 
 args = [ClientMultiSocket]
 start_new_thread(thread_listener, tuple(args))
-
-# def recive():
-#     return ClientMultiSocket.recv(1024)
 
 while True:
     time.sleep(0.5)
@@ -78,18 +72,18 @@ while True:
     # option 1 is about listening online users
     if Input == OPTION.LIST_ONLINE_USERS.value:
         print('receiving online users from the server')
-        # structure id | cmd
+        # structure id [0] | cmd [1]
         ClientMultiSocket.send(str.encode(str(id) + '|' + str(OPTION.LIST_ONLINE_USERS.value)))
-
+        # structure id [0] | cmd [1]
     elif Input == OPTION.LIST_CURRENT_GROUPS.value:
         ClientMultiSocket.send(str.encode(str(id) + '|' + str(OPTION.LIST_CURRENT_GROUPS.value)))
 
 
     elif Input == OPTION.SEND_MESSAGE_TO_USER.value:
         reciver_id = input('choose user id: ')
-        while (True):
+        while True:
             msg = input('Write your message: ')
-            if (msg == 'end'):
+            if msg == 'end':
                 break
             # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
             temp = str(id) + '|' + OPTION.SEND_MESSAGE_TO_USER.value + '|' + reciver_id + '|' + msg
@@ -112,9 +106,9 @@ while True:
         print('--You joined to group ' + group_id + '--')
     elif Input == OPTION.SEND_MESSAGE_TO_GROUP.value:
         group_id = input('Choose group id: ')
-        while (True):
+        while True:
             msg = input('Write your message: ')
-            if (msg == 'end'):
+            if msg == 'end':
                 break
             # structure is [0] client id | [1] option asked | [2] id of the receiver client  | [3] message
             temp = str(id) + '|' + OPTION.SEND_MESSAGE_TO_GROUP.value + '|' + group_id + '|' + msg
@@ -146,8 +140,6 @@ while True:
         ClientMultiSocket.sendall('stop'.encode(UTF8))
         print('--File Send Successfully--')
 
-
-    # option 7 will send request to close the connection
     elif Input == OPTION.CLOSE_CONNECTION.value:
         ClientMultiSocket.send(str.encode(id + '|' + OPTION.CLOSE_CONNECTION.value))
         sys.exit('closing the connection')

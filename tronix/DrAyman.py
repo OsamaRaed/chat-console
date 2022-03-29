@@ -44,7 +44,6 @@ def thread_listener(connection):
 
                     f.write(bytes_read)
                 f.close()
-            print('--File Received Successfully--')
 
         print(DASHES)
         print('Notification message: ')
